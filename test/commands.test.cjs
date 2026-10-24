@@ -19,6 +19,7 @@ test('app launch requests are parsed as names and the installed-app list is disc
 });
 test('animation commands retain their intended actions',()=>{
  assert.deepEqual(parseCommand('climb up'),{type:'climb'});
+ assert.deepEqual(parseCommand('go to top'),{type:'top-edge'});
  assert.deepEqual(parseCommand('lie down'),{type:'rest'});
  assert.deepEqual(parseCommand('stretch'),{type:'pose',name:'stretch'});
  assert.deepEqual(parseCommand('look surprised'),{type:'expression',name:'surprised'});
