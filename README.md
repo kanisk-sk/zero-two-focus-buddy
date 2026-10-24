@@ -11,9 +11,12 @@ npm ci
 npm start
 ```
 
-Click the character to chat; drag her to reposition. Use the tray/menu bar icon to show, hide, pause, or quit. `Cmd/Ctrl+Shift+Space` opens chat. Transparent areas pass clicks to applications below. The quiet window fits around the character; speech bubbles hide after a few seconds, and chat appears only when opened. Near the top edge, conversation appears below the character.
+Click the character to chat; drag her to reposition. Use the tray/menu bar icon to show, hide, pause, or quit. `Cmd/Ctrl+Shift+Space` opens chat. Transparent areas pass clicks to applications below. The quiet window fits around the character; speech bubbles hide after a few seconds, and chat appears only when opened. Near the top edge, conversation appears below the character. A hover pencil opens compact Quick Chat; the gear reveals settings. Escape closes chat, and switching away closes it when no draft is typed.
 
 ## Available now
+
+- Desk mode with a table and chair: `work writing`, `work reading`, or `work laptop`. `focus 25` uses the last selected desk activity; `stop` returns to standing. These scenes have subtle alternate frames, with short laptop blinks.
+
 
 - Frameless, transparent, always-on-top companion window. Drag limits follow the character itself so she can reach the top and other display edges.
 - Twenty expressions, twelve action poses, and eight-frame walk and climb cycles. Leftward movement mirrors the artwork. Walk playback follows actual screen distance; climbing uses reach/grip/pull timing. Stretching now raises, holds, leans, and releases over four seconds.
