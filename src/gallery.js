@@ -13,7 +13,7 @@ function card(name,container){
   if(name==='stretch')player.loop=true;
   players.push({player,name});
 }
-['walk','climb','rest','sleep','sit','crossleg','stretch','wave'].forEach(name=>card(name,'motion'));
+['writing','reading','laptop','walk','climb','rest','sleep','sit','crossleg','stretch','wave'].forEach(name=>card(name,'motion'));
 ['neutral','happy','smile','excited','laughing','smug','teasing','wink','curious','surprised','shocked','angry','annoyed','pout','embarrassed','sad','determined','worried','sleepy','calm'].forEach(name=>card(name,'faces'));
 setInterval(()=>{if(!paused)players.forEach(({player,name})=>{if(name==='walk')player.advanceMotion(1.28,40);else if(name==='climb')player.advanceMotion(0,40);});},40);
 document.getElementById('play').onclick=()=>{paused=!paused;players.forEach(({player})=>player.pause(paused));document.getElementById('play').textContent=paused?'Play animations':'Pause animations';};

@@ -3,6 +3,8 @@ const pet=$('character');
 const player=new window.BuddyAnimation($('sprite'),$('standing'));
 let state='idle',paused=false,dragging=null,moved=false;
 let focusEnd=Number(localStorage.getItem('focusEnd'))||0,lastInteraction=Date.now();
+let deskActivity=localStorage.getItem('deskActivity')||'laptop';
+if(!['writing','reading','laptop'].includes(deskActivity))deskActivity='laptop';
 let movementTimer=null,poseTimer=null,motionSerial=0;
 let bubbleTimer=null,layoutSerial=0;
 function syncLayout(){
@@ -11,7 +13,7 @@ function syncLayout(){
   document.body.dataset.mode=mode;
   return window.buddy.layout({mode,size:Number($('size').value)||170,bubbleHeight:$('bubble').offsetHeight,chatHeight:$('settings').hidden?($('quick-reply').hidden?118:210):310}).then(result=>{if(token===layoutSerial&&result)document.body.dataset.side=result.side;}).catch(()=>{});
 }
-const labels={idle:'here for you ♡',sleep:'recharging my charm… zzz',walk:'a tiny adventure',climb:'one step higher',sit:'staying right here ♡',crossleg:'getting comfortable',rest:'a little breather',jump:'up we go!',hang:'just hanging around',stretch:'a little stretch',yawn:'getting sleepy',wave:'hey, darling ♡',dance:'a little celebration',victory:'we did it!',drag:'taking the scenic route'};
+const labels={writing:'one page at a time',reading:'a little reading time',laptop:'working together ♡',idle:'here for you ♡',sleep:'recharging my charm… zzz',walk:'a tiny adventure',climb:'one step higher',sit:'staying right here ♡',crossleg:'getting comfortable',rest:'a little breather',jump:'up we go!',hang:'just hanging around',stretch:'a little stretch',yawn:'getting sleepy',wave:'hey, darling ♡',dance:'a little celebration',victory:'we did it!',drag:'taking the scenic route'};
 function say(text){
   $('bubble').textContent=text;
   $('quick-reply').textContent=text;
@@ -52,7 +54,7 @@ function toggleChat(){
   syncLayout();
 }
 function closeChat(){if(!$('panel').hidden)toggleChat();}
-function temporaryPose(name,ms=3500){mood(name);poseTimer=setTimeout(()=>{if(state===name)mood('idle');},ms);}
+function temporaryPose(name,ms=3500){mood(name);poseTimer=setTimeout(()=>{if(state===name)mood(focusEnd>Date.now()?deskActivity:'idle');},ms);}
 function startMovement(kind,direction=1){
   if(paused||dragging||focusEnd)return;
   closeChat();mood(kind,direction);
@@ -80,7 +82,8 @@ function startMovement(kind,direction=1){
           return;
         }
         if(kind==='climb')player.advanceMotion(0,dt);
-        const delta=(kind==='walk'?32:24*player.pullFactor())*dt/1000+remainder;
+        const ramp=kind==='walk'?Math.min(1,elapsed/400,(6000-elapsed)/600):1;
+        const delta=(kind==='walk'?32*Math.max(0,ramp):24*player.pullFactor())*dt/1000+remainder;
         const pixels=Math.floor(delta);remainder=delta-pixels;
         if(!pixels)return;
         const step=await window.buddy.desktop({action:'step',dx:kind==='walk'?direction*pixels:0,dy:kind==='climb'?-pixels:0,rect:rect()});
@@ -115,7 +118,8 @@ async function command(text){
         else if(result.reason==='launch-failed')say('I couldn’t open '+result.label+'. Try opening it normally once, then ask me again.');
         else say('That app isn’t on my supported list yet. Type “apps” to see the ones I found.');
         break;
-      case 'focus':focusEnd=Date.now()+result.minutes*60000;localStorage.setItem('focusEnd',focusEnd);mood('sit');say(`${result.minutes} minutes. You bring the effort, I’ll bring the moral support. ♡`);break;
+      case 'desk':deskActivity=result.activity;localStorage.setItem('deskActivity',deskActivity);mood(deskActivity);closeChat();say(({writing:'Notebook ready. One little task at a time. ♡',reading:'A quiet reading moment, darling.',laptop:'Laptop open. Let’s get something done. ♡'})[deskActivity]);break;
+      case 'focus':focusEnd=Date.now()+result.minutes*60000;localStorage.setItem('focusEnd',focusEnd);mood(deskActivity);say(`${result.minutes} minutes. You bring the effort, I’ll bring the moral support. ♡`);break;
       case 'invalid-focus':say('Pick a focus session between 1 and 180 minutes, darling.');break;
       case 'stop':focusEnd=0;localStorage.removeItem('focusEnd');mood('idle');say('Timer and movement stopped. A fresh start whenever you need it.');break;
       case 'sleep':mood('sleep');closeChat();say('A little beauty sleep. Click me when you need me. zzz');break;
@@ -186,4 +190,4 @@ setInterval(()=>{
   else if(idleFor>20000&&state==='idle'&&$('roam').checked)startMovement('walk',Math.random()<.5?-1:1);
 },15000);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('panel').hidden)toggleChat();});
-mood('idle');
+mood(focusEnd>Date.now()?deskActivity:'idle');

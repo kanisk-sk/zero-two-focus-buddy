@@ -23,11 +23,12 @@
     const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
     const context=canvas.getContext('2d',{willReadFrequently:true});
     if(!context)return;
-    context.drawImage(image,0,0);sheet.bounds=[];
+    context.drawImage(image,0,0);sheet.bounds=[];sheet.anchors=[];
     for(let row=0;row<sheet.rows;row++)for(let col=0;col<sheet.cols;col++){
       const x=Math.round(col*canvas.width/sheet.cols),y=Math.round(row*canvas.height/sheet.rows);
       const width=Math.round((col+1)*canvas.width/sheet.cols)-x,height=Math.round((row+1)*canvas.height/sheet.rows)-y;
       const bounds=spriteBounds(context.getImageData(x,y,width,height).data,width,height);
+      sheet.anchors.push(bounds?{x:(bounds.minX+bounds.maxX)/2/width,y:bounds.maxY/height}:null);
       sheet.bounds.push(bounds?`${Math.max(0,bounds.minY-2)/height*100}% ${Math.max(0,width-bounds.maxX-3)/width*100}% ${Math.max(0,height-bounds.maxY-3)/height*100}% ${Math.max(0,bounds.minX-2)/width*100}%`:'0%');
     }
   }
@@ -38,7 +39,8 @@
     poses: {url:'../assets/poses.png',cols:4,rows:3},
     walk: {url:'../assets/walk.png',cols:4,rows:2},
     climb: {url:'../assets/climb.png',cols:4,rows:2},
-    stretch: {url:'../assets/stretch.png',cols:4,rows:2}
+    stretch: {url:'../assets/stretch.png',cols:4,rows:2},
+    desk: {url:'../assets/focus-desk.png',cols:3,rows:2}
   };
   class BuddyAnimation {
     constructor(element, fallback) {
@@ -59,7 +61,7 @@
         image.src=sheet.url;
         this.images.push(image);
       }
-      this.timer=setInterval(()=>{if(!this.paused&&!this.driven&&this.count>1){if(this.name==='stretch')this.advanceMotion(0,110);else{this.frame=(this.frame+1)%this.count;this.render();}}},110);
+      this.timer=setInterval(()=>{if(!this.paused&&!this.driven&&this.count>1){if(this.name==='stretch')this.advanceMotion(0,110);else{if(this.key==='desk'){this.deskTicks=(this.deskTicks||0)+1;this.frame=this.name==='laptop'?Number(this.deskTicks%40===39):this.name==='reading'?Number(this.deskTicks%28>=24):Number(this.deskTicks%16>=8);this.render();return;}this.frame=(this.frame+1)%this.count;this.render();}}},110);
     }
     show(name, direction=1) {
       this.direction=direction;
@@ -67,11 +69,12 @@
       const previous=this.name;
       this.name=name;
       this.count=1;
-      if(name==='walk'||name==='climb'||name==='stretch'){this.key=name;this.start=0;this.count=8;}
+      if(['writing','reading','laptop'].includes(name)){this.key='desk';this.start=['writing','reading','laptop'].indexOf(name);this.count=2;}
+      else if(name==='walk'||name==='climb'||name==='stretch'){this.key=name;this.start=0;this.count=8;}
       else if(poses.includes(name)){this.key='poses';this.start=poses.indexOf(name);}
       else if(expressions.includes(name)){this.key='expressions';this.start=expressions.indexOf(name);}
       else {this.key=null;this.start=0;}
-      if(previous!==name){this.frame=0;this.driven=false;this.distance=0;this.elapsed=0;}
+      if(previous!==name){this.frame=0;this.deskTicks=0;this.driven=false;this.distance=0;this.elapsed=0;}
       this.render();
     }
     drive(){this.driven=true;}
@@ -79,7 +82,8 @@
       if(this.paused)return;
       if(this.name==='walk'){
         this.distance+=Math.abs(distance);
-        this.frame=Math.floor(this.distance/4)%8;
+        const pixelsPerFrame=6*(this.element.clientWidth||170)/170;
+        this.frame=Math.floor(this.distance/pixelsPerFrame)%8;
       }else if(this.name==='climb'||this.name==='stretch'){
         const stretch=this.name==='stretch';
         const durations=stretch?[220,300,350,650,800,800,350,530]:[220,140,180,220,140,180,180,180];
@@ -98,11 +102,15 @@
       this.fallback.hidden=!!ready;
       this.element.hidden=!ready;
       if(!ready)return;
-      const cell=this.start+this.frame;
+      const cell=this.start+this.frame*(this.key==='desk'?3:1);
       const col=cell%sheet.cols,row=Math.floor(cell/sheet.cols);
       this.element.style.backgroundImage=`url("${sheet.url}")`;
       this.element.style.backgroundSize=`${sheet.cols*100}% ${sheet.rows*100}%`;
       this.element.style.backgroundPosition=`${col/(sheet.cols-1)*100}% ${row/(sheet.rows-1)*100}%`;
+      // Align the painted walk cells to one ground line and silhouette center.
+      // Cell margins differ slightly; allowing them to move the entire body creates jitter.
+      const anchor=sheet.anchors?.[cell],base=sheet.anchors?.[0];
+      this.element.style.translate=this.key==='walk'&&anchor&&base?`${(base.x-anchor.x)*100}% ${(base.y-anchor.y)*100}%`:'none';
       this.element.style.clipPath=`inset(${sheet.bounds?.[cell]||'0%'})`;
     }
     pause(value){this.paused=value;}

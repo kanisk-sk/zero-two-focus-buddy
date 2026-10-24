@@ -4,6 +4,8 @@ function parseCommand(input) {
   if(/^(?:go|move) to (?:the )?top(?: edge)?$/.test(text))return{type:'top-edge'};
   const launch=String(input).trim().match(/^(?:open|launch|start)\s+(?:app\s+)?([a-zA-Z][a-zA-Z0-9 .-]{0,79})$/i);
   if(launch)return{type:'open-app',name:launch[1].trim()};
+  const desk=text.match(/^(?:work|study|desk)(?: mode)?(?: (write|writing|read|reading|laptop|typing))?$|^(write|writing|read|reading|laptop|typing)$/);
+  if(desk){const activity=desk[1]||desk[2]||'laptop';return{type:'desk',activity:/^writ/.test(activity)?'writing':/^read/.test(activity)?'reading':'laptop'};}
   const focus = text.match(/^focus(?: for)?(?: (\d+))?(?: min(?:ute)?s?)?$/);
   if (focus) {
     const minutes = Number(focus[1] || 25);
