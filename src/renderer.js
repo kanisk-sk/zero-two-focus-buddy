@@ -14,7 +14,7 @@ async function command(text){
       case 'sleep':mood('sleep');say('A little beauty sleep. Click me when you need me. zzz');break;
       case 'wake':mood('idle');say('Missed me already? I’m here. ♡');break;
       case 'jump':mood('jump');say('A tiny leap of faith!');setTimeout(()=>{if(state==='jump')mood('idle');},700);break;
-      case 'walk':wander();break;
+      case 'walk':if(paused){say('Resume me first, darling.');break;}if(focusEnd){say('Let’s finish our focus session first.');break;}mood('idle');if(!$('panel').hidden)toggleChat();wander();say('A tiny adventure. I won’t go far. ♡');break;
       case 'sit':mood('sit');say('Right here, cheering you on.');break;
       case 'search':say('Opened your search in your browser. Curiosity looks good on you.');break;
       case 'help':say('Try: focus 25 · stop · walk · jump · sit · sleep · wake · search for something. Drag me to move!');break;
@@ -45,5 +45,5 @@ setInterval(()=>{
  if(now>=nextWater){nextWater=now+45*60000;if(!paused&&!$('quiet').checked&&$('water').checked){say('Hydration check, darling. A few sips before your next adventure.');window.buddy.notify('Time for a few sips of water.');}}
  if(now>=nextStretch){nextStretch=now+60*60000;if(!paused&&!$('quiet').checked&&$('stretch').checked){say('Your chair called. It needs a break from you. Stretch for a minute? ♡');window.buddy.notify('Stand up and stretch for a minute.');}}
 },1000);
-setInterval(()=>{if($('roam').checked&&Date.now()-lastInteraction>20000)wander();if(!paused&&!focusEnd&&Date.now()-lastInteraction>180000&&state==='idle'){mood('sleep');say('I’ll be right here. Just resting my eyes…');}},30000);
+setInterval(()=>{if(!paused&&!focusEnd&&Date.now()-lastInteraction>180000&&state==='idle'){mood('sleep');say('I’ll be right here. Just resting my eyes…');}else if($('roam').checked&&Date.now()-lastInteraction>20000)wander();},30000);
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('panel').hidden)toggleChat();});
