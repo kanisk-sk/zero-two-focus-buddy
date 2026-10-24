@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:"><title>Zero Two Focus Buddy</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<main id="companion">
+  <section id="panel" class="interactive" hidden>
+    <header><span class="dot"></span><strong>YOUR LITTLE CO-PILOT</strong><button id="close" aria-label="Close chat">×</button></header>
+    <div id="history" aria-live="polite"><p>Hey, darling. One little task at a time. ♡</p></div>
+    <div id="timer" hidden></div>
+    <div class="quick"><button data-command="focus 25">◷ Focus 25m</button><button data-command="sleep">☾ Nap</button><button data-command="help">? Help</button></div>
+    <form id="chat"><input id="input" maxlength="500" placeholder="Tell me something…" aria-label="Command"><button aria-label="Send command">↑</button></form>
+    <details><summary>Make yourself comfortable</summary><label><input id="water" type="checkbox" checked> Water · every 45 min</label><label><input id="stretch" type="checkbox" checked> Stretch · every 60 min</label><label><input id="roam" type="checkbox" checked> Let her wander</label><label><input id="quiet" type="checkbox"> Quiet mode · pause reminders</label><label>Size <input id="size" type="range" min="110" max="210" value="170"></label></details>
+    <footer><button id="pause">Pause</button><button id="hide">Hide</button><span>⌘/Ctrl ⇧ Space · chat</span></footer>
+  </section>
+  <div id="bubble" class="interactive" role="status">Hey, darling. Ready when you are. ♡</div>
+  <button id="character" class="interactive" aria-label="Zero Two: drag to move, click to chat" title="Drag me around · click to chat"><img src="../assets/character.svg" alt="Chibi Zero Two with pink hair, red horns and red uniform" draggable="false"></button>
+  <span id="mood">here for you ♡</span>
+</main><script src="renderer.js"></script></body></html>
