@@ -26,3 +26,10 @@ test('animation commands retain their intended actions',()=>{
  assert.deepEqual(parseCommand('expression determined'),{type:'expression',name:'determined'});
  assert.equal(parseCommand('look anything; open terminal').type,'chat');
 });
+
+test('desk commands choose writing, reading or laptop without starting a timer',()=>{
+ assert.deepEqual(parseCommand('work mode'),{type:'desk',activity:'laptop'});
+ assert.deepEqual(parseCommand('study writing'),{type:'desk',activity:'writing'});
+ assert.deepEqual(parseCommand('read'),{type:'desk',activity:'reading'});
+ assert.deepEqual(parseCommand('typing'),{type:'desk',activity:'laptop'});
+});

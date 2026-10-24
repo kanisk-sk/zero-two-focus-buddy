@@ -36,9 +36,9 @@ test('sleep and rest have distinct frames; expression selection is static',()=>{
 test('driven walk advances with actual distance rather than elapsed time',()=>{
  const s=setup();s.images.forEach(image=>image.onload());s.player.show('walk');s.player.drive();
  s.tick();assert.equal(s.player.frame,0);
- s.player.advanceMotion(12,100);assert.equal(s.player.frame,3);
- s.player.advanceMotion(0,1000);assert.equal(s.player.frame,3);
- s.player.advanceMotion(-20,100);assert.equal(s.player.frame,0);
+ s.player.advanceMotion(12,100);assert.equal(s.player.frame,2);
+ s.player.advanceMotion(0,1000);assert.equal(s.player.frame,2);
+ s.player.advanceMotion(-36,100);assert.equal(s.player.frame,0);
  s.player.pause(true);s.player.advanceMotion(8,100);assert.equal(s.player.frame,0);
 });
 test('climb holds a reach longer and moves more strongly during pull frames',()=>{
@@ -60,4 +60,18 @@ test('sprite boundary detection excludes disconnected neighboring hair and head 
  for(const [x,y] of [[0,7],[1,7],[8,19],[9,19]])data[(y*width+x)*4+3]=255;
  const box=s.bounds(data,width,height);
  assert.deepEqual([box.minX,box.minY,box.maxX,box.maxY],[5,3,14,16]);
+});
+
+test('desk activities select separate columns and animate within the same activity',()=>{
+ const s=setup();s.images.forEach(image=>image.onload());
+ for(const [name,x] of [['writing','0%'],['reading','50%'],['laptop','100%']]){
+  s.player.show(name);assert.equal(s.element.style.backgroundPosition,x+' 0%');
+  for(let i=0;i<(name==='laptop'?39:name==='reading'?24:8);i++)s.tick();
+  assert.equal(s.element.style.backgroundPosition,x+' 100%');
+ }
+});
+test('walk cadence scales with character size to keep stride distance proportional',()=>{
+ const s=setup();s.element.clientWidth=340;s.player.show('walk');s.player.drive();
+ s.player.advanceMotion(12,100);assert.equal(s.player.frame,1);
+ s.player.advanceMotion(84,100);assert.equal(s.player.frame,0);
 });
