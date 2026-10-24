@@ -1,0 +1,42 @@
+{
+  "name": "zero-two-focus-buddy",
+  "version": "0.1.0",
+  "description": "A playful personal desktop focus companion",
+  "main": "src/main.cjs",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test",
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js",
+    "dist": "electron-builder"
+  },
+  "build": {
+    "appId": "dev.focusbuddy.zerotwo",
+    "productName": "Zero Two Focus Buddy",
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "package.json"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ]
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.0.0",
+    "electron-builder": "^26.18.0"
+  }
+}
