@@ -13,13 +13,19 @@ npm start
 
 Click the character to chat; drag her to reposition. Use the tray/menu bar icon to show, hide, pause, or quit. `Cmd/Ctrl+Shift+Space` opens chat. Transparent areas pass clicks to applications below. The quiet window fits around the character; speech bubbles hide after a few seconds, and chat appears only when opened. Near the top edge, conversation appears below the character. A hover pencil opens compact Quick Chat; the gear reveals settings. Escape closes chat, and switching away closes it when no draft is typed.
 
+## Launch without development tools
+
+Once the Mac preview is built, double-click `Zero Two Focus Buddy.app` inside `dist-animation/mac-arm64`. You can copy it into Applications and keep it in the Dock. Codex and a terminal are not required to run the built app. Use the companion’s menu-bar icon to quit or show it again. It does not start automatically at login.
+
 ## Available now
+
+- Local companion behavior: she chooses occasional gestures, stretches, short walks, rests and naps without a typed command, and reacts to hovering with a wink or wave. Manual commands take priority for two minutes. Focus sessions keep her at the desk with sparse encouragement; quiet mode suppresses unsolicited chatter. Disable “Companion behavior” in settings to stop autonomous actions, or disable wandering to stop autonomous walks. These rules use interaction with the companion itself; they do not monitor other apps or infer whether you are working.
 
 - Desk mode with a table and chair: `work writing`, `work reading`, or `work laptop`. `focus 25` uses the last selected desk activity; `stop` returns to standing. These scenes have subtle alternate frames, with short laptop blinks.
 
 
 - Frameless, transparent, always-on-top companion window. Drag limits follow the character itself so she can reach the top and other display edges.
-- Twenty expressions, twelve action poses, and eight-frame walk and climb cycles. Leftward movement mirrors the artwork. Walk playback follows actual screen distance; climbing uses reach/grip/pull timing. Stretching now raises, holds, leans, and releases over four seconds.
+- Twenty expressions and twelve action poses. Walking uses continuous joint motion with a fixed profile head, planted-foot stance, knee bends, opposite arm swing and slight hair sway; the eight-frame sheet remains a fallback if the rig cannot load. Leftward movement mirrors the artwork. Climbing uses an eight-frame reach/grip/pull cycle. Stretching now raises, holds, leans, and releases over four seconds.
 - The Gallery button and tray menu show the poses and expressions side by side, with play/pause controls.
 - Sitting, resting, and sleeping have distinct drawings. Dragging changes the pose; releasing reacts with a smug expression.
 - Climbing attaches to the nearest screen edge, moves upward, and finishes hanging. Opening chat brings the whole panel back on screen. It does not read or climb other app windows.
