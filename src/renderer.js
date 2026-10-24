@@ -7,6 +7,7 @@ let deskActivity=localStorage.getItem('deskActivity')||'laptop';
 if(!['writing','reading','laptop'].includes(deskActivity))deskActivity='laptop';
 let movementTimer=null,poseTimer=null,motionSerial=0;
 let bubbleTimer=null,layoutSerial=0;
+const behavior=new window.CompanionBehavior();
 function syncLayout(){
   const mode=!$('panel').hidden?'chat':!$('bubble').hidden?'bubble':'quiet';
   const token=++layoutSerial;
@@ -58,7 +59,7 @@ function temporaryPose(name,ms=3500){mood(name);poseTimer=setTimeout(()=>{if(sta
 function startMovement(kind,direction=1){
   if(paused||dragging||focusEnd)return;
   closeChat();mood(kind,direction);
-  const token=motionSerial;let elapsed=0,busy=false,lastTick=Date.now(),remainder=0;
+  const token=motionSerial;let elapsed=0,turnElapsed=0,busy=false,lastTick=Date.now(),remainder=0;
   player.drive();
   const start=async()=>{
     if(kind==='climb'){
@@ -82,7 +83,7 @@ function startMovement(kind,direction=1){
           return;
         }
         if(kind==='climb')player.advanceMotion(0,dt);
-        const ramp=kind==='walk'?Math.min(1,elapsed/400,(6000-elapsed)/600):1;
+        const ramp=kind==='walk'?Math.min(1,(elapsed-turnElapsed)/400,(6000-elapsed)/600):1;
         const delta=(kind==='walk'?32*Math.max(0,ramp):24*player.pullFactor())*dt/1000+remainder;
         const pixels=Math.floor(delta);remainder=delta-pixels;
         if(!pixels)return;
@@ -90,7 +91,7 @@ function startMovement(kind,direction=1){
         if(motionSerial!==token)return;
         if(kind==='walk'){
           if(step?.moved)player.advanceMotion(step.dx,dt);
-          if(step&&!step.moved){direction*=-1;player.show('walk',direction);}
+          if(step&&!step.moved){turnElapsed=elapsed;direction*=-1;player.show('walk',direction);}
         }else if(step&&!step.moved){mood('hang',direction);say('Made it. Just hanging around, darling. ♡');}
       }catch{if(motionSerial===token)mood('idle');}finally{busy=false;}
     },40);
@@ -99,6 +100,7 @@ function startMovement(kind,direction=1){
 }
 async function command(text){
   const p=document.createElement('p');p.className='user';p.textContent='You · '+text;$('history').append(p);lastInteraction=Date.now();
+  behavior.hold(Date.now());
   try{
     const result=await window.buddy.command(text);
     switch(result.type){
@@ -158,10 +160,10 @@ $('close').onclick=toggleChat;window.buddy.onToggle(toggleChat);
 function pause(){paused=!paused;$('pause').textContent=paused?'Resume':'Pause';pet.classList.toggle('paused',paused);player.pause(paused);say(paused?'Taking a quiet moment. Reminders and wandering paused.':'Back with you, darling. ♡');}
 $('pause').onclick=pause;window.buddy.onPause(pause);$('hide').onclick=()=>window.buddy.hide();
 $('gallery').onclick=()=>window.buddy.gallery();
-for(const id of ['water','stretch','roam','quiet']){const saved=localStorage.getItem(id);if(saved!==null)$(id).checked=saved==='true';$(id).onchange=()=>localStorage.setItem(id,$(id).checked);}
+for(const id of ['water','stretch','roam','quiet','companion-behavior']){const saved=localStorage.getItem(id);if(saved!==null)$(id).checked=saved==='true';$(id).onchange=()=>localStorage.setItem(id,$(id).checked);}
 function size(){const n=Math.min(210,Math.max(110,Number($('size').value)||170));pet.style.height=n+'px';pet.style.width=n+'px';document.documentElement.style.setProperty('--pet-size',n+'px');localStorage.setItem('size',n);syncLayout();}
 $('size').value=localStorage.getItem('size')||170;$('size').oninput=size;size();
-pet.onpointerdown=event=>{dragging={x:event.screenX,y:event.screenY,wx:window.screenX,wy:window.screenY};moved=false;cancelMovement();pet.setPointerCapture(event.pointerId);lastInteraction=Date.now();};
+pet.onpointerdown=event=>{dragging={x:event.screenX,y:event.screenY,wx:window.screenX,wy:window.screenY};moved=false;cancelMovement();pet.setPointerCapture(event.pointerId);lastInteraction=Date.now();behavior.hold(lastInteraction,30000);};
 pet.onpointermove=event=>{
   if(!dragging)return;const dx=event.screenX-dragging.x,dy=event.screenY-dragging.y;
   if(Math.abs(dx)+Math.abs(dy)>5){if(!moved)mood('drag');moved=true;}
@@ -182,12 +184,15 @@ setInterval(()=>{
   if(now>=nextWater){nextWater=now+45*60000;if(!paused&&!$('quiet').checked&&$('water').checked){say('Hydration check, darling. A few sips before your next adventure.');window.buddy.notify('Time for a few sips of water.');}}
   if(now>=nextStretch){nextStretch=now+60*60000;if(!paused&&!$('quiet').checked&&$('stretch').checked){if(state==='idle')temporaryPose('stretch',4200);say('Your chair called. It needs a break from you. Stretch for a minute? ♡');window.buddy.notify('Stand up and stretch for a minute.');}}
 },1000);
-setInterval(()=>{
-  const idleFor=Date.now()-lastInteraction;
-  if(paused||focusEnd||!$('panel').hidden||dragging||document.hidden)return;
-  if(idleFor>180000&&['idle','rest','sit'].includes(state)){mood('sleep');say('I’ll be right here. Just resting my eyes…');}
-  else if(idleFor>90000&&state==='idle')mood('rest');
-  else if(idleFor>20000&&state==='idle'&&$('roam').checked)startMovement('walk',Math.random()<.5?-1:1);
-},15000);
+function behaviorContext(){const now=Date.now();return{now,idleFor:now-lastInteraction,state,enabled:$('companion-behavior').checked,paused,hidden:document.hidden,dragging:!!dragging,chatOpen:!$('panel').hidden,speaking:!$('bubble').hidden,focus:focusEnd>now,quiet:$('quiet').checked,roam:$('roam').checked};}
+function actOnOwn(action){
+  if(!action)return;
+  if(action.kind==='walk')startMovement('walk',Math.random()<.5?-1:1);
+  else if(action.kind==='settle')mood(action.name);
+  else if(action.kind==='pose')temporaryPose(action.name,action.duration);
+  if(action.text)say(action.text);
+}
+setInterval(()=>actOnOwn(behavior.tick(behaviorContext())),1000);
+pet.addEventListener('pointerenter',()=>actOnOwn(behavior.hover(behaviorContext())));
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('panel').hidden)toggleChat();});
 mood(focusEnd>Date.now()?deskActivity:'idle');
