@@ -4,12 +4,24 @@ const player=new window.BuddyAnimation($('sprite'),$('standing'));
 let state='idle',paused=false,dragging=null,moved=false;
 let focusEnd=Number(localStorage.getItem('focusEnd'))||0,lastInteraction=Date.now();
 let movementTimer=null,poseTimer=null,motionSerial=0;
+let bubbleTimer=null,layoutSerial=0;
+function syncLayout(){
+  const mode=!$('panel').hidden?'chat':!$('bubble').hidden?'bubble':'quiet';
+  const token=++layoutSerial;
+  document.body.dataset.mode=mode;
+  return window.buddy.layout({mode,size:Number($('size').value)||170,bubbleHeight:$('bubble').offsetHeight}).then(result=>{if(token===layoutSerial&&result)document.body.dataset.side=result.side;}).catch(()=>{});
+}
 const labels={idle:'here for you ♡',sleep:'recharging my charm… zzz',walk:'a tiny adventure',climb:'one step higher',sit:'staying right here ♡',crossleg:'getting comfortable',rest:'a little breather',jump:'up we go!',hang:'just hanging around',stretch:'a little stretch',yawn:'getting sleepy',wave:'hey, darling ♡',dance:'a little celebration',victory:'we did it!',drag:'taking the scenic route'};
 function say(text){
   $('bubble').textContent=text;
   const p=document.createElement('p');p.textContent=text;$('history').append(p);
   while($('history').children.length>12)$('history').firstChild.remove();
   $('history').scrollTop=$('history').scrollHeight;
+  clearTimeout(bubbleTimer);
+  if($('panel').hidden){
+    $('bubble').hidden=false;syncLayout();
+    bubbleTimer=setTimeout(()=>{$('bubble').hidden=true;syncLayout();},Math.max(4000,Math.min(10000,text.length*55)));
+  }
 }
 function cancelMovement(){motionSerial++;clearInterval(movementTimer);movementTimer=null;}
 function mood(next,direction=1){
@@ -28,10 +40,11 @@ function toggleChat(){
   const opening=$('panel').hidden;
   if(opening){
     if(['walk','climb','hang'].includes(state))mood('idle');
-    window.buddy.desktop({action:'reveal'}).catch(()=>{});window.buddy.passthrough(false);
+    window.buddy.passthrough(false);
   }
-  $('panel').hidden=!opening;$('bubble').hidden=opening;
+  clearTimeout(bubbleTimer);$('panel').hidden=!opening;$('bubble').hidden=true;
   if(opening)$('input').focus();lastInteraction=Date.now();
+  syncLayout();
 }
 function closeChat(){if(!$('panel').hidden)toggleChat();}
 function temporaryPose(name,ms=3500){mood(name);poseTimer=setTimeout(()=>{if(state===name)mood('idle');},ms);}
@@ -81,6 +94,21 @@ async function command(text){
   try{
     const result=await window.buddy.command(text);
     switch(result.type){
+      case 'top-edge':
+        mood('idle');closeChat();await syncLayout();
+        await window.buddy.desktop({action:'top'});
+        say('Up here, darling. Still with you. ♡');break;
+      case 'apps':
+        $('apps').replaceChildren();
+        for(const app of result.apps){const button=document.createElement('button');button.textContent=app.label;button.onclick=()=>command('open '+app.id);$('apps').append(button);}
+        $('app-section').hidden=false;$('app-section').open=true;
+        say(result.apps.length?'Pick an app below, or type “open Chrome”, darling.':'I couldn’t find any supported apps on this computer yet.');break;
+      case 'open-app':
+        if(result.ok){temporaryPose('happy',2500);say('Opening '+result.label+'. Go make something good. ♡');}
+        else if(result.reason==='not-installed')say(result.label+' isn’t installed in a supported location. Try “apps” to see what I can open.');
+        else if(result.reason==='launch-failed')say('I couldn’t open '+result.label+'. Try opening it normally once, then ask me again.');
+        else say('That app isn’t on my supported list yet. Type “apps” to see the ones I found.');
+        break;
       case 'focus':focusEnd=Date.now()+result.minutes*60000;localStorage.setItem('focusEnd',focusEnd);mood('sit');say(`${result.minutes} minutes. You bring the effort, I’ll bring the moral support. ♡`);break;
       case 'invalid-focus':say('Pick a focus session between 1 and 180 minutes, darling.');break;
       case 'stop':focusEnd=0;localStorage.removeItem('focusEnd');mood('idle');say('Timer and movement stopped. A fresh start whenever you need it.');break;
@@ -104,7 +132,7 @@ async function command(text){
         closeChat();say(({stretch:'Stretch with me for a second?',yawn:'Who made the day so long?',wave:'Hey, darling. ♡',dance:'A little victory dance!',victory:'Look at us go! ♡',crossleg:'Getting comfortable.'})[result.name]);break;
       case 'expression':temporaryPose(result.name,6000);closeChat();say('Feeling '+result.name+'. ♡');break;
       case 'search':temporaryPose('curious');say('Opened your search in your browser. Curiosity looks good on you.');break;
-      case 'help':say('Try: focus 25 · stop · walk · climb · hang · rest · sleep · sit · stretch · wave · jump · dance · look happy · look smug · wake.');break;
+      case 'help':say('Try: apps · open Chrome · open Calculator · go to top · focus 25 · stop · walk · climb · rest · sleep · stretch · look happy.');break;
       default:temporaryPose('curious');say('I’m still learning conversation, darling. Try “help” for what I can do today.');
     }
   }catch{say('That didn’t work. Try again in a moment.');}
@@ -118,7 +146,7 @@ function pause(){paused=!paused;$('pause').textContent=paused?'Resume':'Pause';p
 $('pause').onclick=pause;window.buddy.onPause(pause);$('hide').onclick=()=>window.buddy.hide();
 $('gallery').onclick=()=>window.buddy.gallery();
 for(const id of ['water','stretch','roam','quiet']){const saved=localStorage.getItem(id);if(saved!==null)$(id).checked=saved==='true';$(id).onchange=()=>localStorage.setItem(id,$(id).checked);}
-function size(){const n=Math.min(210,Math.max(110,Number($('size').value)||170));pet.style.height=n+'px';pet.style.width=n+'px';$('panel').style.bottom=(n+35)+'px';localStorage.setItem('size',n);}
+function size(){const n=Math.min(210,Math.max(110,Number($('size').value)||170));pet.style.height=n+'px';pet.style.width=n+'px';document.documentElement.style.setProperty('--pet-size',n+'px');localStorage.setItem('size',n);syncLayout();}
 $('size').value=localStorage.getItem('size')||170;$('size').oninput=size;size();
 pet.onpointerdown=event=>{dragging={x:event.screenX,y:event.screenY,wx:window.screenX,wy:window.screenY};moved=false;cancelMovement();pet.setPointerCapture(event.pointerId);lastInteraction=Date.now();};
 pet.onpointermove=event=>{

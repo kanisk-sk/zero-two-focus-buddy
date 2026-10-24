@@ -1,5 +1,9 @@
 function parseCommand(input) {
   const text = String(input).trim().toLowerCase();
+  if(/^(apps|list apps|show apps|what apps can you open\??)$/.test(text))return{type:'apps'};
+  if(/^(?:go|move) to (?:the )?top(?: edge)?$/.test(text))return{type:'top-edge'};
+  const launch=String(input).trim().match(/^(?:open|launch|start)\s+(?:app\s+)?([a-zA-Z][a-zA-Z0-9 .-]{0,79})$/i);
+  if(launch)return{type:'open-app',name:launch[1].trim()};
   const focus = text.match(/^focus(?: for)?(?: (\d+))?(?: min(?:ute)?s?)?$/);
   if (focus) {
     const minutes = Number(focus[1] || 25);

@@ -18,3 +18,15 @@
 .expression-grid button,.pose-grid button{font-size:10px;min-width:0;padding:7px 3px;background:#f5e9ef;color:#86556d;border-radius:8px;text-transform:capitalize}
 @keyframes sprite-rest{50%{transform:translateY(-1px)}}
 @keyframes sprite-dance{25%{transform:rotate(-3deg) translateY(-2px)}75%{transform:rotate(3deg) translateY(-3px)}}
+
+/* Only reserve space for conversation while it is visible. */
+html,body{height:100%;width:100%}
+#companion{height:100vh;width:100vw}
+#mood{display:none}
+#panel{bottom:calc(var(--pet-size,170px) + 24px);max-height:calc(100vh - var(--pet-size,170px) - 36px)}
+#bubble{width:300px;max-width:300px;flex-shrink:0}
+body[data-side="below"] #companion{flex-direction:column-reverse}
+body[data-side="below"] #bubble{margin-top:10px;margin-bottom:0}
+body[data-side="below"] #bubble:after{top:-6px;bottom:auto;transform:rotate(225deg)}
+body[data-side="below"] #panel{bottom:auto;top:calc(var(--pet-size,170px) + 24px)}
+body[data-mode="quiet"] #companion{padding:12px}

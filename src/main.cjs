@@ -1,6 +1,9 @@
 const {app, BrowserWindow, ipcMain, screen, Tray, Menu, nativeImage, Notification, globalShortcut, shell} = require('electron');
 const path = require('node:path');
 const {parseCommand} = require('./commands.cjs');
+const {availableApps,launchApp}=require('./app-control.cjs');
+const {clampPosition,planLayout}=require('./window-layout.cjs');
+let petRect={x:95,y:318,width:170,height:170};
 let win, tray, gallery;
 function showGallery(){
   if(gallery&&!gallery.isDestroyed()){gallery.show();gallery.focus();return;}
@@ -36,15 +39,26 @@ app.whenReady().then(createWindow);
 app.on('window-all-closed',()=>app.quit());
 app.on('will-quit',()=>globalShortcut.unregisterAll());
 ipcMain.handle('command', async (event,text)=>{
-  if (event.sender !== win.webContents || typeof text !== 'string' || text.length > 500) return {type:'chat'};
+  if (event.sender !== win.webContents || event.senderFrame!==win.webContents.mainFrame || typeof text !== 'string' || text.length > 500) return {type:'chat'};
   const result = parseCommand(text);
+  if(result.type==='apps')return{type:'apps',apps:availableApps()};
+  if(result.type==='open-app')return{type:'open-app',...await launchApp(result.name)};
   if (result.type === 'search') await shell.openExternal('https://www.google.com/search?q='+encodeURIComponent(result.query));
   return result;
 });
 ipcMain.on('move',(event,point)=>{
   if (event.sender !== win.webContents || !Number.isFinite(point?.x) || !Number.isFinite(point?.y)) return;
   const area = screen.getDisplayNearestPoint({x:Math.round(point.x),y:Math.round(point.y)}).workArea;
-  win.setPosition(Math.round(Math.max(area.x,Math.min(area.x+area.width-360,point.x))),Math.round(Math.max(area.y,Math.min(area.y+area.height-500,point.y))));
+  const next=clampPosition(point.x,point.y,petRect,area);
+  win.setPosition(next.x,next.y);
+});
+ipcMain.handle('layout',(event,payload)=>{
+  if(event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame||!['quiet','bubble','chat'].includes(payload?.mode)||!Number.isFinite(payload.size)||payload.size<110||payload.size>210)return null;
+  const window=win.getBounds(),area=screen.getDisplayMatching(window).workArea;
+  const plan=planLayout({area,window,oldRect:petRect,size:payload.size,mode:payload.mode,bubbleHeight:Number.isFinite(payload.bubbleHeight)?payload.bubbleHeight:80});
+  petRect=plan.rect;
+  win.setBounds({x:plan.x,y:plan.y,width:plan.width,height:plan.height});
+  return{side:plan.side};
 });
 ipcMain.handle('desktop',(event,payload)=>{
   if(event.sender!==win.webContents)return null;
@@ -54,13 +68,14 @@ ipcMain.handle('desktop',(event,payload)=>{
     win.setPosition(Math.round(Math.max(area.x,Math.min(area.x+area.width-bounds.width,bounds.x))),Math.round(Math.max(area.y,Math.min(area.y+area.height-bounds.height,bounds.y))));
     return win.getBounds();
   }
-  const rect=payload?.rect;
-  if(!rect||!['x','y','width','height'].every(key=>Number.isFinite(rect[key]))||rect.width<50||rect.width>220||rect.height<100||rect.height>220||rect.x<0||rect.y<0||rect.x+rect.width>360||rect.y+rect.height>500)return null;
+  const rect={...petRect};
+  if(payload?.action==='edge'||payload?.dy<0){rect.x+=rect.width*.06;rect.width*=.78;}
   const minX=area.x-rect.x,maxX=area.x+area.width-rect.x-rect.width;
   const minY=area.y-rect.y,maxY=area.y+area.height-rect.y-rect.height;
   let x=bounds.x,y=bounds.y;
   const edge=bounds.x+rect.x+rect.width/2<area.x+area.width/2?'left':'right';
-  if(payload.action==='edge')x=edge==='left'?minX:maxX;
+  if(payload.action==='top')y=minY;
+  else if(payload.action==='edge')x=edge==='left'?minX:maxX;
   else if(payload.action==='step'&&Number.isFinite(payload.dx)&&Number.isFinite(payload.dy)&&Math.abs(payload.dx)<=10&&Math.abs(payload.dy)<=10){x+=payload.dx;y+=payload.dy;}
   else return null;
   x=Math.round(Math.max(minX,Math.min(maxX,x)));y=Math.round(Math.max(minY,Math.min(maxY,y)));
