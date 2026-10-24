@@ -35,3 +35,11 @@ test('negative monitor coordinates are supported and chat stays horizontally vis
  const result=planLayout({area:monitor,window:{x:-1932,y:200,width:194,height:194},oldRect,size:170,mode:'chat'});
  assert.ok(result.x>=monitor.x);assert.ok(result.x+result.width<=0);
 });
+test('compact chat and expanded settings preserve the same character anchor',()=>{
+ const oldRect={x:12,y:12,width:170,height:170},window={x:500,y:500,width:194,height:194};
+ const compact=planLayout({area,window,oldRect,size:170,mode:'chat',chatHeight:118});
+ const expanded=planLayout({area,window:compact,oldRect:compact.rect,size:170,mode:'chat',chatHeight:310});
+ assert.equal(compact.height,312);assert.equal(expanded.height,504);
+ assert.equal(compact.y+compact.rect.y,expanded.y+expanded.rect.y);
+ assert.equal(compact.x+compact.rect.x,expanded.x+expanded.rect.x);
+});
