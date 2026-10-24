@@ -30,3 +30,16 @@ body[data-side="below"] #bubble{margin-top:10px;margin-bottom:0}
 body[data-side="below"] #bubble:after{top:-6px;bottom:auto;transform:rotate(225deg)}
 body[data-side="below"] #panel{bottom:auto;top:calc(var(--pet-size,170px) + 24px)}
 body[data-mode="quiet"] #companion{padding:12px}
+
+/* On-demand Quick Chat: settings stay behind the gear. */
+#panel{padding:12px;border-radius:16px}
+#panel header{margin-bottom:9px}
+#settings-toggle{margin-left:auto;font-size:17px}
+#close{margin-left:0}
+#quick-reply{max-height:84px;overflow:auto;user-select:text;line-height:1.5;margin:4px 0 10px}
+#pet-controls{position:absolute;bottom:0;z-index:4;opacity:0;transition:opacity .15s}
+#companion:hover #pet-controls,#pet-controls:focus-within{opacity:1}
+#pet-controls button{width:24px;height:22px;border-radius:8px;background:#fff8fc;color:#86556d;box-shadow:0 2px 8px #68384422}
+body[data-side="below"] #pet-controls{bottom:auto;top:calc(var(--pet-size,170px) + 12px)}
+#chat:focus-within{border-color:#bc5e7c;box-shadow:0 0 0 1px #bc5e7c}
+#chat input:focus-visible{outline:none}

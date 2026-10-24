@@ -4,11 +4,11 @@ function clampPosition(x,y,rect,area){
     y:Math.round(Math.max(area.y-rect.y,Math.min(area.y+area.height-rect.y-rect.height,y)))
   };
 }
-function planLayout({area,window,oldRect,size,mode,bubbleHeight=80}){
+function planLayout({area,window,oldRect,size,mode,bubbleHeight=80,chatHeight=310}){
   const width=Math.min(area.width,mode==='quiet'?size+24:360);
   const anchor={x:window.x+oldRect.x,y:window.y+oldRect.y};
   const above=Math.max(0,anchor.y-area.y),below=Math.max(0,area.y+area.height-anchor.y-size);
-  const desired=mode==='chat'?310:mode==='bubble'?Math.max(60,Math.min(180,bubbleHeight+24)):0;
+  const desired=mode==='chat'?Math.max(100,Math.min(360,chatHeight)):mode==='bubble'?Math.max(60,Math.min(180,bubbleHeight+24)):0;
   const side=desired<=above||above>=below?'above':'below';
   const extra=mode==='quiet'?0:Math.min(desired,Math.max(0,(side==='above'?above:below)-12));
   const height=Math.min(area.height,size+24+extra);

@@ -55,7 +55,7 @@ ipcMain.on('move',(event,point)=>{
 ipcMain.handle('layout',(event,payload)=>{
   if(event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame||!['quiet','bubble','chat'].includes(payload?.mode)||!Number.isFinite(payload.size)||payload.size<110||payload.size>210)return null;
   const window=win.getBounds(),area=screen.getDisplayMatching(window).workArea;
-  const plan=planLayout({area,window,oldRect:petRect,size:payload.size,mode:payload.mode,bubbleHeight:Number.isFinite(payload.bubbleHeight)?payload.bubbleHeight:80});
+  const plan=planLayout({area,window,oldRect:petRect,size:payload.size,mode:payload.mode,chatHeight:Number.isFinite(payload.chatHeight)?payload.chatHeight:310,bubbleHeight:Number.isFinite(payload.bubbleHeight)?payload.bubbleHeight:80});
   petRect=plan.rect;
   win.setBounds({x:plan.x,y:plan.y,width:plan.width,height:plan.height});
   return{side:plan.side};

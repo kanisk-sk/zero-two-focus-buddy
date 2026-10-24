@@ -9,16 +9,19 @@ function syncLayout(){
   const mode=!$('panel').hidden?'chat':!$('bubble').hidden?'bubble':'quiet';
   const token=++layoutSerial;
   document.body.dataset.mode=mode;
-  return window.buddy.layout({mode,size:Number($('size').value)||170,bubbleHeight:$('bubble').offsetHeight}).then(result=>{if(token===layoutSerial&&result)document.body.dataset.side=result.side;}).catch(()=>{});
+  return window.buddy.layout({mode,size:Number($('size').value)||170,bubbleHeight:$('bubble').offsetHeight,chatHeight:$('settings').hidden?($('quick-reply').hidden?118:210):310}).then(result=>{if(token===layoutSerial&&result)document.body.dataset.side=result.side;}).catch(()=>{});
 }
 const labels={idle:'here for you ♡',sleep:'recharging my charm… zzz',walk:'a tiny adventure',climb:'one step higher',sit:'staying right here ♡',crossleg:'getting comfortable',rest:'a little breather',jump:'up we go!',hang:'just hanging around',stretch:'a little stretch',yawn:'getting sleepy',wave:'hey, darling ♡',dance:'a little celebration',victory:'we did it!',drag:'taking the scenic route'};
 function say(text){
   $('bubble').textContent=text;
+  $('quick-reply').textContent=text;
   const p=document.createElement('p');p.textContent=text;$('history').append(p);
   while($('history').children.length>12)$('history').firstChild.remove();
   $('history').scrollTop=$('history').scrollHeight;
   clearTimeout(bubbleTimer);
-  if($('panel').hidden){
+  if(!$('panel').hidden){
+    $('quick-reply').hidden=false;syncLayout();
+  }else{
     $('bubble').hidden=false;syncLayout();
     bubbleTimer=setTimeout(()=>{$('bubble').hidden=true;syncLayout();},Math.max(4000,Math.min(10000,text.length*55)));
   }
@@ -43,6 +46,8 @@ function toggleChat(){
     window.buddy.passthrough(false);
   }
   clearTimeout(bubbleTimer);$('panel').hidden=!opening;$('bubble').hidden=true;
+  $('quick-reply').hidden=true;
+  $('settings').hidden=true;$('settings-toggle').setAttribute('aria-expanded','false');
   if(opening)$('input').focus();lastInteraction=Date.now();
   syncLayout();
 }
@@ -101,6 +106,7 @@ async function command(text){
       case 'apps':
         $('apps').replaceChildren();
         for(const app of result.apps){const button=document.createElement('button');button.textContent=app.label;button.onclick=()=>command('open '+app.id);$('apps').append(button);}
+        $('settings').hidden=false;$('settings-toggle').setAttribute('aria-expanded','true');
         $('app-section').hidden=false;$('app-section').open=true;
         say(result.apps.length?'Pick an app below, or type “open Chrome”, darling.':'I couldn’t find any supported apps on this computer yet.');break;
       case 'open-app':
@@ -141,6 +147,9 @@ $('chat').addEventListener('submit',event=>{event.preventDefault();const text=$(
 const expressionNames=['neutral','happy','smile','excited','laughing','smug','teasing','wink','curious','surprised','shocked','angry','annoyed','pout','embarrassed','sad','determined','worried','sleepy','calm'];
 for(const name of expressionNames){const button=document.createElement('button');button.textContent=name;button.dataset.command='look '+name;$('expressions').append(button);}
 document.querySelectorAll('[data-command]').forEach(button=>button.onclick=()=>command(button.dataset.command));
+$('open-chat').onclick=toggleChat;
+$('settings-toggle').onclick=()=>{$('settings').hidden=!$('settings').hidden;$('settings-toggle').setAttribute('aria-expanded',String(!$('settings').hidden));syncLayout();};
+window.addEventListener('blur',()=>{if(!$('input').value.trim())closeChat();});
 $('close').onclick=toggleChat;window.buddy.onToggle(toggleChat);
 function pause(){paused=!paused;$('pause').textContent=paused?'Resume':'Pause';pet.classList.toggle('paused',paused);player.pause(paused);say(paused?'Taking a quiet moment. Reminders and wandering paused.':'Back with you, darling. ♡');}
 $('pause').onclick=pause;window.buddy.onPause(pause);$('hide').onclick=()=>window.buddy.hide();
