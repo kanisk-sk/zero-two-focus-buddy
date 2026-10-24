@@ -8,5 +8,20 @@ test('focus durations are bounded and default to 25 minutes',()=>{
 });
 test('search retains the original query',()=>assert.deepEqual(parseCommand('search for Darling in the Franxx'),{type:'search',query:'Darling in the Franxx'}));
 test('unrecognized commands never become executable instructions',()=>{
- for(const text of ['open Terminal','rm -rf /','focus 5; say hello','<script>'])assert.equal(parseCommand(text).type,'chat');
+ for(const text of ['open Calculator; say hello','open $(whoami)','open /tmp/example.app','rm -rf /','focus 5; say hello','<script>'])assert.equal(parseCommand(text).type,'chat');
+});
+test('app launch requests are parsed as names and the installed-app list is discoverable',()=>{
+ assert.deepEqual(parseCommand('Open Google Chrome'),{type:'open-app',name:'Google Chrome'});
+ assert.deepEqual(parseCommand('launch app VS Code'),{type:'open-app',name:'VS Code'});
+ assert.deepEqual(parseCommand('apps'),{type:'apps'});
+ assert.deepEqual(parseCommand('start Calculator'),{type:'open-app',name:'Calculator'});
+ assert.equal(parseCommand('open '+'a'.repeat(81)).type,'chat');
+});
+test('animation commands retain their intended actions',()=>{
+ assert.deepEqual(parseCommand('climb up'),{type:'climb'});
+ assert.deepEqual(parseCommand('lie down'),{type:'rest'});
+ assert.deepEqual(parseCommand('stretch'),{type:'pose',name:'stretch'});
+ assert.deepEqual(parseCommand('look surprised'),{type:'expression',name:'surprised'});
+ assert.deepEqual(parseCommand('expression determined'),{type:'expression',name:'determined'});
+ assert.equal(parseCommand('look anything; open terminal').type,'chat');
 });
