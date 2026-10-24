@@ -1,6 +1,6 @@
 # Zero Two Focus Buddy
 
-A personal anime desktop companion for Apple Silicon macOS and Windows. A first functional prototype, with temporary code-drawn character art inspired by the supplied Zero Two reference.
+A personal anime desktop companion for Apple Silicon macOS and Windows. A first functional prototype, with generated character artwork based on the supplied Zero Two reference.
 
 ## Run
 
@@ -16,7 +16,7 @@ Click the character to chat; drag her to reposition. Use the tray/menu bar icon 
 ## Available now
 
 - Frameless, transparent, always-on-top companion window.
-- Idle, walk, jump, sit, and sleep motion states using provisional SVG art (not final frame-by-frame sprites).
+- Idle, walk, jump, sit, and sleep motion states using a painted character image (not final frame-by-frame sprites).
 - Typed commands: `focus 25`, `stop`, `walk`, `jump`, `sit`, `sleep`, `wake`, `help`, `search for …`.
 - Focus countdown, water every 45 minutes, stretch every 60 minutes, quiet mode, pause, adjustable character size.
 - Local settings and focus deadline persist. Wellness timers restart when the app restarts. Pause suspends wellness nudges and autonomous movement; an active focus countdown continues.
