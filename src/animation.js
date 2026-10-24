@@ -1,5 +1,36 @@
 // Sprite sheets use equal square cells; the original bitmap is never rescaled or sliced on disk.
 (() => {
+  // Find the main connected silhouette, ignoring stray pixels from neighboring cells.
+  function spriteBounds(data,width,height){
+    const seen=new Uint8Array(width*height),stack=new Int32Array(width*height);
+    let largest=0,result=null;
+    for(let start=0;start<seen.length;start++){
+      if(seen[start]||data[start*4+3]<96)continue;
+      let size=0,count=0,minX=width,minY=height,maxX=0,maxY=0;
+      stack[size++]=start;seen[start]=1;
+      while(size){
+        const index=stack[--size],x=index%width,y=Math.floor(index/width);
+        count++;minX=Math.min(minX,x);minY=Math.min(minY,y);maxX=Math.max(maxX,x);maxY=Math.max(maxY,y);
+        const visit=next=>{if(!seen[next]&&data[next*4+3]>=96){seen[next]=1;stack[size++]=next;}};
+        if(x>0)visit(index-1);if(x+1<width)visit(index+1);if(y>0)visit(index-width);if(y+1<height)visit(index+width);
+      }
+      if(count>largest){largest=count;result={minX,minY,maxX,maxY};}
+    }
+    return result;
+  }
+  function analyze(sheet,image){
+    if(sheet.bounds||typeof document==='undefined')return;
+    const canvas=document.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+    const context=canvas.getContext('2d',{willReadFrequently:true});
+    if(!context)return;
+    context.drawImage(image,0,0);sheet.bounds=[];
+    for(let row=0;row<sheet.rows;row++)for(let col=0;col<sheet.cols;col++){
+      const x=Math.round(col*canvas.width/sheet.cols),y=Math.round(row*canvas.height/sheet.rows);
+      const width=Math.round((col+1)*canvas.width/sheet.cols)-x,height=Math.round((row+1)*canvas.height/sheet.rows)-y;
+      const bounds=spriteBounds(context.getImageData(x,y,width,height).data,width,height);
+      sheet.bounds.push(bounds?`${Math.max(0,bounds.minY-2)/height*100}% ${Math.max(0,width-bounds.maxX-3)/width*100}% ${Math.max(0,height-bounds.maxY-3)/height*100}% ${Math.max(0,bounds.minX-2)/width*100}%`:'0%');
+    }
+  }
   const expressions = ['neutral','happy','smile','excited','laughing','smug','teasing','wink','curious','surprised','shocked','angry','annoyed','pout','embarrassed','sad','determined','worried','sleepy','calm'];
   const poses = ['sit','crossleg','rest','sleep','stretch','yawn','wave','jump','drag','hang','dance','victory'];
   const sheets = {
@@ -24,7 +55,7 @@
       this.images=[];
       for(const [key,sheet] of Object.entries(sheets)) {
         const image=new Image();
-        image.onload=()=>{this.loaded.add(key);if(this.key===key)this.render();};
+        image.onload=()=>{try{analyze(sheet,image);}catch{delete sheet.bounds;}this.loaded.add(key);if(this.key===key)this.render();};
         image.src=sheet.url;
         this.images.push(image);
       }
@@ -72,8 +103,10 @@
       this.element.style.backgroundImage=`url("${sheet.url}")`;
       this.element.style.backgroundSize=`${sheet.cols*100}% ${sheet.rows*100}%`;
       this.element.style.backgroundPosition=`${col/(sheet.cols-1)*100}% ${row/(sheet.rows-1)*100}%`;
+      this.element.style.clipPath=`inset(${sheet.bounds?.[cell]||'0%'})`;
     }
     pause(value){this.paused=value;}
   }
   window.BuddyAnimation=BuddyAnimation;
+  window.BuddySpriteBounds=spriteBounds;
 })();
