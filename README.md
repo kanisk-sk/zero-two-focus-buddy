@@ -11,26 +11,30 @@ npm ci
 npm start
 ```
 
-Click the character to chat; drag her to reposition. Use the tray/menu bar icon to show, hide, pause, or quit. `Cmd/Ctrl+Shift+Space` opens chat. Transparent areas pass clicks to applications below.
+Click the character to chat; drag her to reposition. Use the tray/menu bar icon to show, hide, pause, or quit. `Cmd/Ctrl+Shift+Space` opens chat. Transparent areas pass clicks to applications below. The quiet window fits around the character; speech bubbles hide after a few seconds, and chat appears only when opened. Near the top edge, conversation appears below the character.
 
 ## Available now
 
-- Frameless, transparent, always-on-top companion window.
-- Idle, walk, jump, sit, and sleep motion states using a painted character image (not final frame-by-frame sprites).
-- Typed commands: `focus 25`, `stop`, `walk`, `jump`, `sit`, `sleep`, `wake`, `help`, `search for …`.
+- Frameless, transparent, always-on-top companion window. Drag limits follow the character itself so she can reach the top and other display edges.
+- Twenty expressions, twelve action poses, and eight-frame walk and climb cycles. Leftward movement mirrors the artwork. Walk playback follows actual screen distance; climbing uses reach/grip/pull timing. Stretching now raises, holds, leans, and releases over four seconds.
+- The Gallery button and tray menu show the poses and expressions side by side, with play/pause controls.
+- Sitting, resting, and sleeping have distinct drawings. Dragging changes the pose; releasing reacts with a smug expression.
+- Climbing attaches to the nearest screen edge, moves upward, and finishes hanging. Opening chat brings the whole panel back on screen. It does not read or climb other app windows.
+- App launcher: type `apps`, `open Chrome`, `open Calculator`, or `launch VS Code`, or pick an installed app from the chat panel. macOS and Windows use separate fixed app lists; unsupported names and arbitrary commands are rejected.
+- Typed commands: `focus 25`, `stop`, `walk`, `climb`, `hang`, `rest`, `jump`, `sit`, `sleep`, `wake`, `stretch`, `wave`, `dance`, `look happy`, `help`, `search for …`.
 - Focus countdown, water every 45 minutes, stretch every 60 minutes, quiet mode, pause, adjustable character size.
 - Local settings and focus deadline persist. Wellness timers restart when the app restarts. Pause suspends wellness nudges and autonomous movement; an active focus countdown continues.
 - Search opens the default browser; it does not generate answers or read browsing history.
 
 ## Next milestones
 
-1. Polished transparent sprite sheet matching the reference, with distinct frames and expressions.
-2. Allowlisted app launching and graceful app close confirmation.
+1. Refine sprite frame consistency, add fuller rest/sleep transitions, and expand window-aware interaction.
+2. Graceful app closing with confirmation and more configurable app shortcuts.
 3. Push-to-talk voice input and optional conversation provider.
 4. Email connection with explicit account permissions and notification filters.
 5. Distraction detection, configurable intervals, quiet hours, fullscreen behavior, and signed installers.
 
-No microphone, email, general notification access, or unrestricted computer control is implemented in this version. There is no background AI service or API key requirement.
+App opening is supported through a fixed list of installed apps. App closing, microphone, email, general notification access, and unrestricted computer control are not implemented in this version. There is no background AI service or API key requirement.
 
 ## Checks and builds
 

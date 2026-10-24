@@ -1,13 +1,13 @@
 {
   "name": "zero-two-focus-buddy",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "A playful personal desktop focus companion",
   "main": "src/main.cjs",
   "private": true,
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js",
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/animation.js && node --check src/gallery.js && node --check src/app-control.cjs && node --check src/window-layout.cjs",
     "dist": "electron-builder"
   },
   "build": {
