@@ -2,3 +2,19 @@
 
 /* Preserve the painted character proportions at every size. */
 #character img{object-fit:contain;object-position:center bottom}.sit img{transform:none}.sleep img{transform:rotate(12deg) translateY(8px)}
+
+/* Frame atlases carry the drawing changes; motion only adds a gentle weight shift. */
+#character{position:relative;animation:none;flex-shrink:0}
+#character img{position:absolute;inset:0;object-fit:contain;transform:none}
+#sprite{display:block;width:100%;height:100%;background-repeat:no-repeat;pointer-events:none;filter:drop-shadow(0 3px 2px #2e20311a)}
+.state-idle{animation:breathe 4s ease-in-out infinite!important}
+.state-sleep{animation:sprite-rest 4s ease-in-out infinite!important}
+.state-rest{animation:sprite-rest 5s ease-in-out infinite!important}
+.state-jump{animation:jump .9s ease-in-out!important}
+.state-dance{animation:sprite-dance .6s ease-in-out infinite!important}
+.paused{animation-play-state:paused!important}
+.quick{flex-wrap:wrap}.quick button{padding:6px 9px}
+.expression-grid,.pose-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:10px 0}
+.expression-grid button,.pose-grid button{font-size:10px;min-width:0;padding:7px 3px;background:#f5e9ef;color:#86556d;border-radius:8px;text-transform:capitalize}
+@keyframes sprite-rest{50%{transform:translateY(-1px)}}
+@keyframes sprite-dance{25%{transform:rotate(-3deg) translateY(-2px)}75%{transform:rotate(3deg) translateY(-3px)}}

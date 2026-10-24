@@ -6,12 +6,13 @@
     <header><span class="dot"></span><strong>YOUR LITTLE CO-PILOT</strong><button id="close" aria-label="Close chat">×</button></header>
     <div id="history" aria-live="polite"><p>Hey, darling. One little task at a time. ♡</p></div>
     <div id="timer" hidden></div>
-    <div class="quick"><button data-command="focus 25">◷ Focus 25m</button><button data-command="sleep">☾ Nap</button><button data-command="help">? Help</button></div>
+    <div class="quick"><button data-command="focus 25">◷ Focus</button><button data-command="walk">Walk</button><button data-command="climb">Climb</button><button data-command="rest">Rest</button><button data-command="sleep">☾ Nap</button></div>
     <form id="chat"><input id="input" maxlength="500" placeholder="Tell me something…" aria-label="Command"><button aria-label="Send command">↑</button></form>
+    <details><summary>Expressions & poses</summary><div id="expressions" class="expression-grid"></div><div class="pose-grid"><button data-command="sit">Sit</button><button data-command="crossleg">Cross-legged</button><button data-command="stretch">Stretch</button><button data-command="yawn">Yawn</button><button data-command="wave">Wave</button><button data-command="jump">Jump</button><button data-command="hang">Hang</button><button data-command="dance">Dance</button><button data-command="victory">Victory</button><button data-command="wake">Neutral</button></div></details>
     <details><summary>Make yourself comfortable</summary><label><input id="water" type="checkbox" checked> Water · every 45 min</label><label><input id="stretch" type="checkbox" checked> Stretch · every 60 min</label><label><input id="roam" type="checkbox" checked> Let her wander</label><label><input id="quiet" type="checkbox"> Quiet mode · pause reminders</label><label>Size <input id="size" type="range" min="110" max="210" value="170"></label></details>
-    <footer><button id="pause">Pause</button><button id="hide">Hide</button><span>⌘/Ctrl ⇧ Space · chat</span></footer>
+    <footer><button id="pause">Pause</button><button id="hide">Hide</button><button id="gallery">Gallery</button><span>⌘/Ctrl ⇧ Space · chat</span></footer>
   </section>
   <div id="bubble" class="interactive" role="status">Hey, darling. Ready when you are. ♡</div>
-  <button id="character" class="interactive" aria-label="Zero Two: drag to move, click to chat" title="Drag me around · click to chat"><img src="../assets/zero-two-idle.png" alt="Chibi Zero Two with pink hair, red horns and red uniform" draggable="false"></button>
+  <button id="character" class="interactive" aria-label="Zero Two: drag to move, click to chat" title="Drag me around · click to chat"><img id="standing" src="../assets/zero-two-idle.png" alt="Chibi Zero Two with pink hair, red horns and red uniform" draggable="false"><span id="sprite" aria-hidden="true" hidden></span></button>
   <span id="mood">here for you ♡</span>
-</main><script src="renderer.js"></script></body></html>
+</main><script src="animation.js"></script><script src="renderer.js"></script></body></html>
