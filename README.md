@@ -57,3 +57,7 @@ npm run dist
 Build macOS installers on macOS (ARM64 for M4); build Windows installers on Windows. Unsigned development builds may trigger OS installation prompts. Windows behavior must be tested on Windows before claiming verified support.
 
 Character rights belong to their respective owners. This is a personal fan project, with no ownership claim over Zero Two or DARLING in the FRANXX.
+
+The companion occasionally takes a white Monster can break after roughly five minutes without companion interaction, or twenty minutes at her desk. A short ready–sip–lower sequence returns her to the desk activity and leaves the focus timer running. Drink breaks have a 20–30 minute cooldown and respect pause, quiet mode, conversation, dragging, and the companion behavior switch. These are local character animations; they do not monitor your work or require an API key.
+
+Type `drink`, `monster`, or `drink break` to preview the standing or seated sequence immediately.
