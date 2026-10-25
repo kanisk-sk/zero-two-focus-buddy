@@ -7,7 +7,7 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/animation.js && node --check src/autonomy.js && node --check src/walk-rig.js && node --check src/gallery.js && node --check src/app-control.cjs && node --check src/window-layout.cjs",
+    "check": "node --check src/main.cjs && node --check src/preload.cjs && node --check src/renderer.js && node --check src/animation.js && node --check src/autonomy.js && node --check src/gallery.js && node --check src/app-control.cjs && node --check src/window-layout.cjs",
     "dist": "electron-builder"
   },
   "build": {

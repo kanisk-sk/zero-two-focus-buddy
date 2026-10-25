@@ -25,7 +25,7 @@ Once the Mac preview is built, double-click `Zero Two Focus Buddy.app` inside `d
 
 
 - Frameless, transparent, always-on-top companion window. Drag limits follow the character itself so she can reach the top and other display edges.
-- Twenty expressions and twelve action poses. Walking uses continuous joint motion with a fixed profile head, planted-foot stance, knee bends, opposite arm swing and slight hair sway; the eight-frame sheet remains a fallback if the rig cannot load. Leftward movement mirrors the artwork. Climbing uses an eight-frame reach/grip/pull cycle. Stretching now raises, holds, leans, and releases over four seconds.
+- Twenty expressions and twelve action poses. Walking uses complete painted frames, with playback tied to actual screen distance, size-adjusted stride timing and gentle starts/stops. Leftward movement mirrors the artwork. Climbing uses an eight-frame reach/grip/pull cycle. Stretching now raises, holds, leans, and releases over four seconds.
 - The Gallery button and tray menu show the poses and expressions side by side, with play/pause controls.
 - Sitting, resting, and sleeping have distinct drawings. Dragging changes the pose; releasing reacts with a smug expression.
 - Climbing attaches to the nearest screen edge, moves upward, and finishes hanging. Opening chat brings the whole panel back on screen. It does not read or climb other app windows.
