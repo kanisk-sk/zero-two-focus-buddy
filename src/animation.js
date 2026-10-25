@@ -46,7 +46,6 @@
     constructor(element, fallback) {
       this.element=element;
       this.fallback=fallback;
-      this.rig=window.BuddyWalkRig?new window.BuddyWalkRig(element,()=>this.render()):null;
       this.frame=0;
       this.paused=false;
       this.direction=1;
@@ -75,14 +74,13 @@
       else if(poses.includes(name)){this.key='poses';this.start=poses.indexOf(name);}
       else if(expressions.includes(name)){this.key='expressions';this.start=expressions.indexOf(name);}
       else {this.key=null;this.start=0;}
-      if(previous!==name){if(name==='walk')this.rig?.reset();this.frame=0;this.deskTicks=0;this.driven=false;this.distance=0;this.elapsed=0;}
+      if(previous!==name){this.frame=0;this.deskTicks=0;this.driven=false;this.distance=0;this.elapsed=0;}
       this.render();
     }
     drive(){this.driven=true;}
     advanceMotion(distance,milliseconds=0){
       if(this.paused)return;
       if(this.name==='walk'){
-        this.rig?.move(distance);
         this.distance+=Math.abs(distance);
         const pixelsPerFrame=6*(this.element.clientWidth||170)/170;
         this.frame=Math.floor(this.distance/pixelsPerFrame)%8;
@@ -99,9 +97,6 @@
     }
     pullFactor(){return [0.25,0.65,1.9,0.25,0.65,1.9,0.7,0.7][this.frame]||0.7;}
     render() {
-      const rigReady=this.name==='walk'&&this.rig?.ready;
-      this.rig?.show(!!rigReady,this.direction);
-      if(rigReady){this.fallback.hidden=true;this.element.hidden=false;this.element.style.backgroundImage='none';this.element.style.clipPath='none';this.element.style.translate='none';return;}
       const sheet=sheets[this.key];
       const ready=sheet&&this.loaded.has(this.key);
       this.fallback.hidden=!!ready;
@@ -118,7 +113,7 @@
       this.element.style.translate=this.key==='walk'&&anchor&&base?`${(base.x-anchor.x)*100}% ${(base.y-anchor.y)*100}%`:'none';
       this.element.style.clipPath=`inset(${sheet.bounds?.[cell]||'0%'})`;
     }
-    pause(value){this.paused=value;this.rig?.setPaused(value);}
+    pause(value){this.paused=value;}
   }
   window.BuddyAnimation=BuddyAnimation;
   window.BuddySpriteBounds=spriteBounds;
