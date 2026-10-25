@@ -33,3 +33,12 @@ test('desk commands choose writing, reading or laptop without starting a timer',
  assert.deepEqual(parseCommand('read'),{type:'desk',activity:'reading'});
  assert.deepEqual(parseCommand('typing'),{type:'desk',activity:'laptop'});
 });
+
+test('everyday conversation has specific local intents without overriding app commands',()=>{
+ for(const [text,intent] of [['Hello!','greeting'],["I'm tired",'tired'],['thank you','thanks'],['you are cute','compliment'],['how are you?','status'],['I am bored','bored']])assert.deepEqual(parseCommand(text),{type:'conversation',intent});
+ assert.deepEqual(parseCommand('open Hello'),{type:'open-app',name:'Hello'});
+});
+
+test('ending focus accepts the same words as the visible control',()=>{
+ for(const text of ['end focus','end my focus session','stop focus mode','cancel timer','stop focusing'])assert.deepEqual(parseCommand(text),{type:'stop'});
+});
