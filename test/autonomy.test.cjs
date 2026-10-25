@@ -59,3 +59,27 @@ test('a long gap in companion interaction does not send her straight back to sle
  assert.equal(b.tick(context({now:1450000,idleFor:1450000,state:'sleep'})).name,'waking');
  assert.notEqual(b.tick(context({now:1500000,idleFor:1500000})).kind,'settle');
 });
+
+test('bored drink break has ordered poses, cooldown, and obeys pause and quiet mode',()=>{
+ const b=new CompanionBehavior(0,()=>0);b.greeted=true;
+ const c=context({now:310000,idleFor:310000,quiet:true});
+ const a=b.tick(c);assert.equal(a.name,'drink-break');assert.equal(a.text,undefined);
+ assert.deepEqual(a.steps.map(s=>s.name),['drink-ready','drink-sip','drink-done']);
+ assert.notEqual(b.tick({...c,now:340000}).name,'drink-break');
+ const paused=new CompanionBehavior(0,()=>0);assert.equal(paused.tick({...c,paused:true}),null);
+});
+test('long desk work takes a seated break and returns to the selected desk activity',()=>{
+ const b=new CompanionBehavior(0,()=>0);
+ b.tick(context({now:25000,focus:true,state:'reading'}));
+ const a=b.tick(context({now:1225000,focus:true,state:'reading'}));
+ assert.equal(a.name,'drink-break');assert.equal(a.returnState,'reading');
+ assert.deepEqual(a.steps.map(s=>s.name),['desk-drink-ready','desk-drink-sip','desk-drink-done']);
+ assert.notEqual(b.tick(context({now:1255000,focus:true,state:'reading'})).name,'drink-break');
+});
+test('leaving desk work resets continuous work duration',()=>{
+ const b=new CompanionBehavior(0,()=>0);b.greeted=true;
+ b.tick(context({now:25000,focus:true,state:'laptop'}));
+ b.tick(context({now:800000,idleFor:0}));
+ b.tick(context({now:900000,focus:true,state:'laptop'}));
+ assert.notEqual(b.tick(context({now:1250000,focus:true,state:'laptop'})).name,'drink-break');
+});

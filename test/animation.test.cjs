@@ -75,3 +75,11 @@ test('walk cadence scales with character size to keep stride distance proportion
  s.player.advanceMotion(12,100);assert.equal(s.player.frame,1);
  s.player.advanceMotion(84,100);assert.equal(s.player.frame,0);
 });
+
+test('drink poses select six static cells without looping into other scenes',()=>{
+ const s=setup();s.images.forEach(image=>image.onload());
+ for(const [i,name] of ['drink-ready','drink-sip','drink-done','desk-drink-ready','desk-drink-sip','desk-drink-done'].entries()){
+  s.player.show(name);const position=`${i%3*50}% ${Math.floor(i/3)*100}%`;
+  assert.equal(s.element.style.backgroundPosition,position);s.tick();assert.equal(s.element.style.backgroundPosition,position);
+ }
+});

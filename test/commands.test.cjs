@@ -42,3 +42,7 @@ test('everyday conversation has specific local intents without overriding app co
 test('ending focus accepts the same words as the visible control',()=>{
  for(const text of ['end focus','end my focus session','stop focus mode','cancel timer','stop focusing'])assert.deepEqual(parseCommand(text),{type:'stop'});
 });
+
+test('drink break aliases select the character animation',()=>{
+ for(const text of ['drink','monster','drink break'])assert.deepEqual(parseCommand(text),{type:'drink'});
+});
