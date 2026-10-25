@@ -40,7 +40,8 @@
     walk: {url:'../assets/walk.png',cols:4,rows:2},
     climb: {url:'../assets/climb.png',cols:4,rows:2},
     stretch: {url:'../assets/stretch.png',cols:4,rows:2},
-    desk: {url:'../assets/focus-desk.png',cols:3,rows:2}
+    desk: {url:'../assets/focus-desk.png',cols:3,rows:2},
+    drink: {url:'../assets/drink-break.png',cols:3,rows:2}
   };
   class BuddyAnimation {
     constructor(element, fallback) {
@@ -69,7 +70,8 @@
       const previous=this.name;
       this.name=name;
       this.count=1;
-      if(['writing','reading','laptop'].includes(name)){this.key='desk';this.start=['writing','reading','laptop'].indexOf(name);this.count=2;}
+      if(['drink-ready','drink-sip','drink-done','desk-drink-ready','desk-drink-sip','desk-drink-done'].includes(name)){this.key='drink';this.start=['drink-ready','drink-sip','drink-done','desk-drink-ready','desk-drink-sip','desk-drink-done'].indexOf(name);}
+      else if(['writing','reading','laptop'].includes(name)){this.key='desk';this.start=['writing','reading','laptop'].indexOf(name);this.count=2;}
       else if(name==='walk'||name==='climb'||name==='stretch'){this.key=name;this.start=0;this.count=8;}
       else if(poses.includes(name)){this.key='poses';this.start=poses.indexOf(name);}
       else if(expressions.includes(name)){this.key='expressions';this.start=expressions.indexOf(name);}

@@ -12,6 +12,7 @@ function parseCommand(input) {
     return minutes >= 1 && minutes <= 180 ? {type:'focus', minutes} : {type:'invalid-focus'};
   }
   if (/^(?:stop|cancel|end)(?: (?:my )?(?:focus(?: mode| session)?|timer|session))?$|^stop focusing$/.test(text)) return {type:'stop'};
+  if (/^(drink|monster|drink break)$/.test(text)) return {type:'drink'};
   if (/^(sleep|nap)$/.test(text)) return {type:'sleep'};
   if (/^(wake|wake up)$/.test(text)) return {type:'wake'};
   if (/^(jump|hop)$/.test(text)) return {type:'jump'};
