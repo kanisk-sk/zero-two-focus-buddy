@@ -19,7 +19,8 @@ Once the Mac preview is built, double-click `Zero Two Focus Buddy.app` inside `d
 
 ## Available now
 
-- Local companion behavior: she chooses occasional gestures, stretches, short walks, rests and naps without a typed command, and reacts to hovering with a wink or wave. Manual commands take priority for two minutes. Focus sessions keep her at the desk with sparse encouragement; quiet mode suppresses unsolicited chatter. Disable “Companion behavior” in settings to stop autonomous actions, or disable wandering to stop autonomous walks. These rules use interaction with the companion itself; they do not monitor other apps or infer whether you are working.
+- Local companion behavior: a greeting shortly after launch, linked expressions and pose sequences, short explorations, hover reactions and right-click play. The default Lively setting keeps her active; Gentle slows the pace. Chatter has a cooldown, focus stays calm at the desk, and quiet mode suppresses unsolicited speech. Brief commands take priority for around twelve seconds; selected poses and sleep are respected longer. Disable “Companion behavior” to stop autonomous actions, or disable wandering to stop autonomous walks. These rules use interaction with the companion itself and do not monitor other apps.
+- A few everyday phrases work locally: “hello”, “thank you”, “I’m tired”, “I’m bored”, “you are cute”, and “how are you?”. Replies are scripted; this is not open-ended AI conversation.
 
 - Desk mode with a table and chair: `work writing`, `work reading`, or `work laptop`. `focus 25` uses the last selected desk activity; `stop` returns to standing. These scenes have subtle alternate frames, with short laptop blinks.
 
@@ -31,7 +32,7 @@ Once the Mac preview is built, double-click `Zero Two Focus Buddy.app` inside `d
 - Climbing attaches to the nearest screen edge, moves upward, and finishes hanging. Opening chat brings the whole panel back on screen. It does not read or climb other app windows.
 - App launcher: type `apps`, `open Chrome`, `open Calculator`, or `launch VS Code`, or pick an installed app from the chat panel. macOS and Windows use separate fixed app lists; unsupported names and arbitrary commands are rejected.
 - Typed commands: `focus 25`, `stop`, `walk`, `climb`, `hang`, `rest`, `jump`, `sit`, `sleep`, `wake`, `stretch`, `wave`, `dance`, `look happy`, `help`, `search for …`.
-- Focus countdown, water every 45 minutes, stretch every 60 minutes, quiet mode, pause, adjustable character size.
+- Focus countdown with an **End focus** button directly in Quick Chat and a stop button beside the hover pencil. End it at any time; cancellation clears the saved deadline and does not trigger a completion celebration. Water reminders every 45 minutes, stretch reminders every 60 minutes, quiet mode, pause, and adjustable character size.
 - Local settings and focus deadline persist. Wellness timers restart when the app restarts. Pause suspends wellness nudges and autonomous movement; an active focus countdown continues.
 - Search opens the default browser; it does not generate answers or read browsing history.
 
