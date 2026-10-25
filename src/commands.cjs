@@ -11,7 +11,7 @@ function parseCommand(input) {
     const minutes = Number(focus[1] || 25);
     return minutes >= 1 && minutes <= 180 ? {type:'focus', minutes} : {type:'invalid-focus'};
   }
-  if (/^(stop|cancel)( focus| timer)?$/.test(text)) return {type:'stop'};
+  if (/^(?:stop|cancel|end)(?: (?:my )?(?:focus(?: mode| session)?|timer|session))?$|^stop focusing$/.test(text)) return {type:'stop'};
   if (/^(sleep|nap)$/.test(text)) return {type:'sleep'};
   if (/^(wake|wake up)$/.test(text)) return {type:'wake'};
   if (/^(jump|hop)$/.test(text)) return {type:'jump'};
@@ -27,6 +27,8 @@ function parseCommand(input) {
   if (/^(help|commands)$/.test(text)) return {type:'help'};
   const search = String(input).trim().match(/^search(?: for)?\s+(.+)$/i);
   if (search) return {type:'search', query:search[1]};
+  const conversation=[['greeting',/^(hi|hey|hello|good morning|good evening)(?: there| zero two| darling| buddy)?[!. ]*$/],['thanks',/^(thanks|thank you|thankyou)(?: so much)?[!. ]*$/],['tired',/^(?:i(?: am|’m|'m)? )?(?:so |really )?(tired|exhausted|sleepy)[!. ]*$/],['bored',/^(?:i(?: am|’m|'m)? )?(?:so |really )?bored[!. ]*$/],['compliment',/^(?:you(?: are|’re|'re)? )?(?:so |really )?(cute|adorable|amazing)[!. ]*$/],['status',/^(how are you|what are you doing|what’s up|what's up)[?! .]*$/]];
+  for(const [intent,pattern] of conversation)if(pattern.test(text))return{type:'conversation',intent};
   return {type:'chat'};
 }
 module.exports = {parseCommand};

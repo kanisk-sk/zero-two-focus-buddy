@@ -43,3 +43,16 @@ body[data-mode="quiet"] #companion{padding:12px}
 body[data-side="below"] #pet-controls{bottom:auto;top:calc(var(--pet-size,170px) + 12px)}
 #chat:focus-within{border-color:#bc5e7c;box-shadow:0 0 0 1px #bc5e7c}
 #chat input:focus-visible{outline:none}
+
+#focus-controls{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 10px;padding:7px 9px;background:#f9e9ef;border-radius:10px}
+#focus-controls #timer{padding:0;font-size:11px;font-weight:600;background:none}
+#end-focus{background:white;border:1px solid #e5bacb;color:#963f60;border-radius:8px;padding:6px 9px;font-size:11px;white-space:nowrap}
+#pet-controls{display:flex;gap:5px}#end-focus-quick{color:#a94462!important}
+#energy{margin-left:auto;background:white;color:#86556d;border:1px solid #ead5df;border-radius:6px;padding:4px}
+#character img{transition:transform .18s ease-out}
+#character.attending:not(.paused) img{transform:translateX(var(--look-x,0px)) rotate(var(--look-tilt,0deg))}
+#character.noticing:not(.paused){animation:notice 1.6s ease-in-out!important}
+@keyframes notice{25%{transform:rotate(-1.4deg) translateY(-1px)}60%{transform:rotate(1deg)}100%{transform:none}}
+
+/* Keep little hops inside the compact transparent window. */
+@keyframes jump{50%{transform:translateY(-7px) rotate(-2deg)}}
